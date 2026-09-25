@@ -13,6 +13,10 @@ const prisma = new PrismaClient();
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("Torq API is running! 🚀");
+});
+
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret123";
 
 // Profile: Update
