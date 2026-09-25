@@ -4,15 +4,9 @@ import { LogOut, User, Users, ChevronRight, Edit3, Camera } from 'lucide-react-n
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
-import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import { API_URL } from '@/constants/api';
 
-const getApiHost = () => {
-  if (Platform.OS === 'web') return 'http://localhost:3001';
-  const hostUri = Constants.expoConfig?.hostUri;
-  if (hostUri) return `http://${hostUri.split(':')[0]}:3001`;
-  return 'http://10.0.2.2:3001';
-};
 
 export default function MoreScreen() {
   const router = useRouter();
@@ -54,7 +48,7 @@ export default function MoreScreen() {
 
   const handleSaveProfile = async () => {
     try {
-      const host = getApiHost();
+      const host = API_URL;
       const res = await fetch(`${host}/api/users/profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

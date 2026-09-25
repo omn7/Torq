@@ -4,14 +4,8 @@ import { ChevronLeft, Send, Flame, Trophy, User } from 'lucide-react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect, useRef } from 'react';
-import Constants from 'expo-constants';
+import { API_URL } from '@/constants/api';
 
-const getApiHost = () => {
-  if (Platform.OS === 'web') return 'http://localhost:3001';
-  const hostUri = Constants.expoConfig?.hostUri;
-  if (hostUri) return `http://${hostUri.split(':')[0]}:3001`;
-  return 'http://10.0.2.2:3001';
-};
 
 export default function CircleScreen() {
   const { id } = useLocalSearchParams();
@@ -37,7 +31,7 @@ export default function CircleScreen() {
         uid = u.id;
       }
       
-      const host = getApiHost();
+      const host = API_URL;
       // Fetch circle details (by finding it in the user's circles)
       if (uid) {
         const res = await fetch(`${host}/api/circles?userId=${uid}`);
@@ -65,7 +59,7 @@ export default function CircleScreen() {
   const handleAddMember = async () => {
     if (!newMemberId.trim()) return;
     try {
-      const host = getApiHost();
+      const host = API_URL;
       const res = await fetch(`${host}/api/circles/${id}/addMember`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -89,7 +83,7 @@ export default function CircleScreen() {
     // Simple polling for chat every 5s
     const interval = setInterval(() => {
       if (tab === 'chat') {
-        const host = getApiHost();
+        const host = API_URL;
         fetch(`${host}/api/circles/${id}/chat`)
           .then(res => res.json())
           .then(data => setChatMessages(data))
@@ -117,7 +111,7 @@ export default function CircleScreen() {
     setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
 
     try {
-      const host = getApiHost();
+      const host = API_URL;
       await fetch(`${host}/api/circles/${id}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -139,7 +133,7 @@ export default function CircleScreen() {
     }
     const timer = setTimeout(async () => {
       try {
-        const host = getApiHost();
+        const host = API_URL;
         const res = await fetch(`${host}/api/users/search?q=${encodeURIComponent(newMemberId)}`);
         if (res.ok) {
           const data = await res.json();

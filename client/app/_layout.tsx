@@ -9,7 +9,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
+import { API_URL } from '@/constants/api';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -67,12 +67,6 @@ async function registerForPushNotificationsAsync() {
   return token;
 }
 
-const getApiHost = () => {
-  if (Platform.OS === 'web') return 'http://localhost:3001';
-  const hostUri = Constants.expoConfig?.hostUri;
-  if (hostUri) return `http://${hostUri.split(':')[0]}:3001`;
-  return 'http://10.0.2.2:3001';
-};
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -96,7 +90,7 @@ export default function RootLayout() {
           const stored = await AsyncStorage.getItem('userData');
           if (stored) {
             const user = JSON.parse(stored);
-            const host = getApiHost();
+            const host = API_URL;
             fetch(`${host}/api/users/profile`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },

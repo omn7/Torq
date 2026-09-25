@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Flame, Plus, Trash2, Droplets, Scale } from 'lucide-react-native';
 import { useEffect, useState, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
+import { API_URL } from '@/constants/api';
 
 const WORKOUT_DB = {
   "Chest": ["Barbell Flat Bench Press", "Dumbbell Flat Bench Press", "Incline Barbell Bench Press", "Incline Dumbbell Bench Press", "Decline Bench Press", "Dumbbell Chest Flye", "Cable Chest Flye", "Pec Deck Machine Flye", "Chest Dips", "Push-ups", "Machine Chest Press"],
@@ -16,12 +16,6 @@ const WORKOUT_DB = {
 const MUSCLES = Object.keys(WORKOUT_DB);
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-const getApiHost = () => {
-  if (Platform.OS === 'web') return 'http://localhost:3001';
-  const hostUri = Constants.expoConfig?.hostUri;
-  if (hostUri) return `http://${hostUri.split(':')[0]}:3001`;
-  return 'http://10.0.2.2:3001';
-};
 
 export default function ActionScreen() {
   const [userData, setUserData] = useState<any>(null);
@@ -41,7 +35,7 @@ export default function ActionScreen() {
       const user = JSON.parse(userStr);
       setUserData(user);
 
-      const host = getApiHost();
+      const host = API_URL;
       const res = await fetch(`${host}/api/metrics/weekly?userId=${user.id}`);
       if (res.ok) {
         const data = await res.json();
@@ -96,7 +90,7 @@ export default function ActionScreen() {
     if (activeExercises.length === 0) return;
     setIsSavingWorkout(true);
     try {
-      const host = getApiHost();
+      const host = API_URL;
       const dbSets = [];
       for (const ex of activeExercises) {
         let setNum = 1;

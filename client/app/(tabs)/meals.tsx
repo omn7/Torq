@@ -3,14 +3,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Utensils, Coffee, Apple, Pizza } from 'lucide-react-native';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
+import { API_URL } from '@/constants/api';
 
-const getApiHost = () => {
-  if (Platform.OS === 'web') return 'http://localhost:3001';
-  const hostUri = Constants.expoConfig?.hostUri;
-  if (hostUri) return `http://${hostUri.split(':')[0]}:3001`;
-  return 'http://10.0.2.2:3001';
-};
 
 const getMealIcon = (type: string) => {
   if (type === 'Breakfast') return <Coffee color="#30E07D" size={24} />;
@@ -39,7 +33,7 @@ export default function MealsScreen() {
         const user = JSON.parse(stored);
         setUserData(user);
         
-        const host = getApiHost();
+        const host = API_URL;
         const dateStr = new Date().toISOString().split('T')[0];
         const res = await fetch(`${host}/api/meals?userId=${user.id}&date=${dateStr}`);
         if (res.ok) {
@@ -61,7 +55,7 @@ export default function MealsScreen() {
   const handleAddMeal = async () => {
     if (!mealName.trim() || !calories.trim()) return;
     try {
-      const host = getApiHost();
+      const host = API_URL;
       const dateStr = new Date().toISOString().split('T')[0];
       const res = await fetch(`${host}/api/meals`, {
         method: 'POST',
