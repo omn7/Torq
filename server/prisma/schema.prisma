@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String      @unique
+  password    String
+  avatarUrl   String?
+  bio         String?
+  pushToken   String?
+  streakDays  Int         @default(0)
+  totalPoints Int         @default(0)
+  circleIds   String[]    @db.ObjectId
+  circles     Circle[]    @relation(fields: [circleIds], references: [id])
+  
+  aiMessages  AiMessage[]
+}
+
+type AiMessage {
+  role      String   // "user" or "assistant"
+  content   String
+  timestamp DateTime @default(now())
+}
+
+model DailyLog {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @db.ObjectId
+  date           DateTime // normalized to midnight UTC
+  stepsCount     Int      @default(0)
+  waterIntakeMl  Int      @default(0)
+  caloriesBurned Int      @default(0)
+  caloriesEaten  Int      @default(0)
+  weightKg       Float?
+  gymVisited     Boolean  @default(false)
+
+  @@unique([userId, date])
+}
+
+model WorkoutPlan {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  category     String   // e.g., "Fat Loss", "Yoga", "Muscle Gain"
+  difficulty   String   // e.g., "Beginner", "Intermediate", "Advanced"
+  durationMin  Int
+  rating       Float
+  thumbnailUrl String?
+  trainerName  String?
+  description  String?
+}
+
+model WorkoutSession {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String       @db.ObjectId
+  workoutPlanId   String?      @db.ObjectId
+  durationMinutes Int
+  caloriesBurned  Int
+  completedAt     DateTime     @default(now())
+  sets            WorkoutSet[]
+}
+
+type WorkoutSet {
+  exerciseName String
+  setNumber    Int
+  reps         Int
+  weightKg     Float
+}
+
+model Circle {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  userIds     String[] @db.ObjectId
+  users       User[]   @relation(fields: [userIds], references: [id])
+}
+
+model ChatMessage {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  circleId  String   @db.ObjectId
+  senderId  String   @db.ObjectId
+  text      String
+  createdAt DateTime @default(now())
+}
+
+model Meal {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  type      String   // "Breakfast", "Lunch", "Dinner", "Snack"
+  name      String
+  calories  Int
+  protein   Int      @default(0)
+  carbs     Int      @default(0)
+  fats      Int      @default(0)
+  date      DateTime @default(now()) // Stored as normalized midnight or specific time
+}
