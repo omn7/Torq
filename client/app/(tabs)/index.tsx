@@ -4,14 +4,8 @@ import { Bell, Flame, TrendingUp, Footprints, Droplets, Flame as CalorieFlame, S
 import { useRouter } from 'expo-router';
 import { useEffect, useState, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
+import { API_URL } from '@/constants/api';
 
-const getApiHost = () => {
-  if (Platform.OS === 'web') return 'http://localhost:3001';
-  const hostUri = Constants.expoConfig?.hostUri;
-  if (hostUri) return `http://${hostUri.split(':')[0]}:3001`;
-  return 'http://10.0.2.2:3001';
-};
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -32,7 +26,7 @@ export default function HomeScreen() {
 
   const loadMetricsForDate = async (uid: string, dateStr: string) => {
     try {
-      const host = getApiHost();
+      const host = API_URL;
       const metricsRes = await fetch(`${host}/api/metrics/daily?userId=${uid}&date=${dateStr}`);
       if (metricsRes.ok) {
         const mData = await metricsRes.json();
@@ -54,7 +48,7 @@ export default function HomeScreen() {
         uid = user.id;
       }
 
-      const host = getApiHost();
+      const host = API_URL;
         
       const res = await fetch(`${host}/api/home-feed`);
       if (res.ok) {
@@ -103,7 +97,7 @@ export default function HomeScreen() {
     if (!inputValue || isNaN(Number(inputValue)) || !userData) return;
     setModalVisible(false);
     try {
-      const host = getApiHost();
+      const host = API_URL;
       // Log for the *selected* date so it feels dynamic
       const endpoint = modalType === 'water' ? '/api/metrics/water' : '/api/metrics/weight';
       const body: any = { userId: userData.id, date: selectedDateStr };

@@ -4,14 +4,8 @@ import { Users, ChevronRight, MessageCircle } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
-import Constants from 'expo-constants';
+import { API_URL } from '@/constants/api';
 
-const getApiHost = () => {
-  if (Platform.OS === 'web') return 'http://localhost:3001';
-  const hostUri = Constants.expoConfig?.hostUri;
-  if (hostUri) return `http://${hostUri.split(':')[0]}:3001`;
-  return 'http://10.0.2.2:3001';
-};
 
 export default function ChatScreen() {
   const router = useRouter();
@@ -30,7 +24,7 @@ export default function ChatScreen() {
         const user = JSON.parse(stored);
         setUserData(user);
 
-        const host = getApiHost();
+        const host = API_URL;
         const res = await fetch(`${host}/api/circles?userId=${user.id}`);
         if (res.ok) {
           const data = await res.json();
@@ -51,7 +45,7 @@ export default function ChatScreen() {
   const handleJoinCircle = async () => {
     if (!circleName.trim()) return;
     try {
-      const host = getApiHost();
+      const host = API_URL;
       const res = await fetch(`${host}/api/circles/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
